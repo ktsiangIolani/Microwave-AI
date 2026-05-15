@@ -163,6 +163,7 @@ const [capturedImage, setCapturedImage] = useState(null);
 const [imageBlob, setImageBlob] = useState(null);
 const [foodInput, setFoodInput] = useState("");
 const [specificHeatResult, setSpecificHeatResult] = useState(null);
+const [isLoading, setIsLoading] = useState(false);
 const videoRef = useRef(null);
 const canvasRef = useRef(null);
 
@@ -220,6 +221,7 @@ const captureImage = () => {
 };
 //send image to API
 const sendImageToAPI = async (blob) => {
+ setIsLoading(true);
  const formData = new FormData();
  formData.append("image", blob);
 
@@ -266,6 +268,8 @@ const sendImageToAPI = async (blob) => {
 
  } catch (err) {
    console.error("Upload error:", err);
+ } finally {
+   setIsLoading(false);
  }
 };
 
@@ -357,6 +361,12 @@ const renderTabs = () => (
 
 return (
  <div style={styles.page}>
+ <style>{`
+   @keyframes slide {
+     0% { transform: translateX(-100%); }
+     100% { transform: translateX(400%); }
+   }
+ `}</style>
    <div style={styles.container}>
      <h1 style={styles.header}>Smart Microwave AI</h1>
      {renderTabs()}
@@ -598,9 +608,14 @@ return (
 
  <div style={styles.card}>
    <video ref={videoRef} autoPlay style={styles.video} />
-   <button style={styles.button} onClick={captureImage}>
-     🔥 Analyze Food
+   <button style={{ ...styles.button, opacity: isLoading ? 0.6 : 1 }} onClick={captureImage} disabled={isLoading}>
+     {isLoading ? "Analyzing..." : "🔥 Analyze Food"}
    </button>
+   {isLoading && (
+     <div style={styles.loadingTrack}>
+       <div style={styles.loadingFill} />
+     </div>
+   )}
    <canvas ref={canvasRef} style={{ display: "none" }} />
  </div>
 </>
@@ -735,6 +750,21 @@ customContainer: {
 },
 video: { width: "100%", borderRadius: "10px", marginBottom: "15px" },
 previewImage: { width: "100%", borderRadius: "10px" },
+loadingTrack: {
+ width: "100%",
+ height: "6px",
+ background: "#e0d4c8",
+ borderRadius: "3px",
+ marginTop: "10px",
+ overflow: "hidden",
+},
+loadingFill: {
+ width: "25%",
+ height: "100%",
+ background: "#BFA17E",
+ borderRadius: "3px",
+ animation: "slide 1.2s ease-in-out infinite",
+},
 };
 
 export default App;
