@@ -1,0 +1,9 @@
+flask
+flask_cors
+matplotlib
+numpy
+pandas
+pillow
+tensorflow
+google-cloud-storage
+gunicorn

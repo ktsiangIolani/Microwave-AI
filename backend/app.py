@@ -12,8 +12,10 @@ import tensorflow as tf
 import base64
 from PIL import Image
 import io
+from google.cloud import storage
 
-
+BUCKET_NAME = "microwave-ai-food-101"
+MODEL_FILE = "microwave-ai.h5"
 # TODO 1: Initialize the Flask app
 app = Flask(__name__)
 
@@ -29,7 +31,14 @@ CORS(app)
 # - Load the file "microwave-ai.h5"
 # - Disable compile since we only need inference
 def load_model():
-    model = tf.keras.models.load_model("microwave-ai.h5", compile=False)
+    client = storage.Client()
+    bucket = client.bucket(BUCKET_NAME)
+    blob = bucket.blob(MODEL_FILE)
+
+    local_model_path = "/tmp/microwave-ai.h5"
+
+    blob.download_to_filename(local_model_path)
+    model = tf.keras.models.load_model(local_model_path, compile=False)
     return model
 
 
