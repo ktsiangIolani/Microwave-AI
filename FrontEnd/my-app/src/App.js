@@ -160,7 +160,6 @@ const [preferences, setPreferences] = useState({
 });
 
 const [capturedImage, setCapturedImage] = useState(null);
-const [imageBlob, setImageBlob] = useState(null);
 const [foodInput, setFoodInput] = useState("");
 const [specificHeatResult, setSpecificHeatResult] = useState(null);
 const [isLoading, setIsLoading] = useState(false);
@@ -209,13 +208,12 @@ const captureImage = () => {
  canvas.toBlob((blob) => {
    if (!blob) return;
 
-   // ✅ SAVE IMAGE FOR PREVIEW
+   // SAVE IMAGE FOR PREVIEW
    const previewUrl = URL.createObjectURL(blob);
    setCapturedImage(previewUrl);
-   setImageBlob(blob);
 
 
-   // ✅ AUTO ANALYZE
+   // AUTO ANALYZE
    sendImageToAPI(blob);
  }, "image/png");
 };
@@ -246,7 +244,7 @@ const sendImageToAPI = async (blob) => {
    setSpecificHeatResult(result);
 
 
-   // 🔥 AUTO CALCULATE TIME
+   // AUTO CALCULATE TIME
    const deltaT = preferences.targetTemp - preferences.initialTemp;
 
 
@@ -260,7 +258,7 @@ const sendImageToAPI = async (blob) => {
    setMicrowaveTime(timeSeconds);
 
 
-   // 🔥 go straight to results
+   // go straight to results
    setStep(4);
 
 
@@ -276,13 +274,6 @@ const sendImageToAPI = async (blob) => {
 
 
 
-const reanalyzeImage = () => {
- if (!imageBlob) {
-   alert("No image to analyze");
-   return;
- }
- sendImageToAPI(imageBlob);
-};
 
 /* -------------------- SPECIFIC HEAT TEST FUNCTION -------------------- */
 const detectSpecificHeatCategory = (food) => {
@@ -291,7 +282,7 @@ const detectSpecificHeatCategory = (food) => {
 
 
 
- // 🔥 First: check exact food match
+ // First: check exact food match
  if (FOOD_SPECIFIC_HEAT[key]) {
    return {
      label: "Exact Match",
@@ -434,7 +425,7 @@ return (
          <h3>Set Heating Preferences</h3>
 
 
-         {/* <label>🌡 Initial Temperature: {preferences.InitialTemp}°C</label>
+         {/* <label>Initial Temperature: {preferences.InitialTemp}°C</label>
          <p></p>
          <input
            type="range"
@@ -556,7 +547,7 @@ return (
 
 
          <p></p>
-         <label>⚖ Mass (grams)</label>
+         <label>Mass (grams)</label>
          <input
            type="number"
            style={styles.input}
@@ -609,7 +600,7 @@ return (
  <div style={styles.card}>
    <video ref={videoRef} autoPlay style={styles.video} />
    <button style={{ ...styles.button, opacity: isLoading ? 0.6 : 1 }} onClick={captureImage} disabled={isLoading}>
-     {isLoading ? "Analyzing..." : "🔥 Analyze Food"}
+     {isLoading ? "Analyzing..." : "Analyze Food"}
    </button>
    {isLoading && (
      <div style={styles.loadingTrack}>
@@ -665,9 +656,12 @@ Calculate Microwave Time
 
    <button
      style={styles.button}
-     onClick={reanalyzeImage}
+     onClick={() => {
+       setCapturedImage(null);
+       setStep(3);
+     }}
    >
-     🔁 Analyze Again
+     Analyze Again
    </button>
  </div>
 )}
