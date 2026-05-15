@@ -225,10 +225,13 @@ const sendImageToAPI = async (blob) => {
 
 
  try {
-   const response = await fetch("http://34.124.219.23:5000/predict", {
-     method: "POST",
-     body: formData
-   });
+   const response = await fetch(
+     "https://microwave-ai-669394454391.europe-west1.run.app/predict",
+     {
+       method: "POST",
+       body: formData,
+     },
+   );
 
 
    const data = await response.json();
